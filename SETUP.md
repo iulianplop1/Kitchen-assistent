@@ -24,7 +24,7 @@ Create a `.env` file in the root directory:
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-NEXT_PUBLIC_GEMINI_API_KEY=AIzaSyDRkO31dq3n5R5KUFVbLgEXQF9yXrx455c
+NEXT_PUBLIC_GEMINI_API_KEY=your-gemini-api-key
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 

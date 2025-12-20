@@ -42,7 +42,7 @@ Make sure your code is on GitHub first (you already did this ✅).
    | `NEXT_PUBLIC_SUPABASE_URL` | `https://nbzbmueojubzskutmold.supabase.co` |
    | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...` (your full key) |
    | `SUPABASE_SERVICE_ROLE_KEY` | `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...` (your full key) |
-   | `NEXT_PUBLIC_GEMINI_API_KEY` | `AIzaSyDAPwdjFvLknDrbmEj1kHIZRd_H4nITvMc` |
+   | `NEXT_PUBLIC_GEMINI_API_KEY` | Your Gemini API key (get one from https://makersuite.google.com/app/apikey) |
    | `NEXT_PUBLIC_APP_URL` | `https://your-app-name.vercel.app` (Vercel will give you this) |
 
 3. **Select environments:** Check all (Production, Preview, Development)
@@ -96,7 +96,7 @@ Vercel will give you a URL like: `https://kitcheniq-xyz.vercel.app`
 NEXT_PUBLIC_SUPABASE_URL=https://nbzbmueojubzskutmold.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5iemJtdWVvanVienNrdXRtb2xkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNzcxNDYsImV4cCI6MjA4MTc1MzE0Nn0.PO-nPuz9uVVNZ8W68auowWgKcby5ZhO2qjIvOE_BbPw
 SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5iemJtdWVvanVienNrdXRtb2xkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NjE3NzE0NiwiZXhwIjoyMDgxNzUzMTQ2fQ.sSuhN46jgh7oMbrV7RGh04Jb6gBBM_xCTdaYPZsojFo
-NEXT_PUBLIC_GEMINI_API_KEY=AIzaSyDAPwdjFvLknDrbmEj1kHIZRd_H4nITvMc
+NEXT_PUBLIC_GEMINI_API_KEY=your-gemini-api-key
 NEXT_PUBLIC_APP_URL=https://your-deployed-url.vercel.app
 ```
 

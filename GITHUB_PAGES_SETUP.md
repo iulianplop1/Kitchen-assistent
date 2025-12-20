@@ -36,7 +36,7 @@ Your API keys need to be added as GitHub Secrets (they won't be visible in code)
    |------|-------|
    | `NEXT_PUBLIC_SUPABASE_URL` | `https://nbzbmueojubzskutmold.supabase.co` |
    | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5iemJtdWVvanVienNrdXRtb2xkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNzcxNDYsImV4cCI6MjA4MTc1MzE0Nn0.PO-nPuz9uVVNZ8W68auowWgKcby5ZhO2qjIvOE_BbPw` |
-   | `NEXT_PUBLIC_GEMINI_API_KEY` | `AIzaSyDAPwdjFvLknDrbmEj1kHIZRd_H4nITvMc` |
+   | `NEXT_PUBLIC_GEMINI_API_KEY` | Your Gemini API key (get one from https://makersuite.google.com/app/apikey) |
    | `NEXT_PUBLIC_APP_URL` | `https://YOUR_USERNAME.github.io/kitcheniq` (replace with your username and repo name) |
 
 6. **Click "Add secret"** for each one

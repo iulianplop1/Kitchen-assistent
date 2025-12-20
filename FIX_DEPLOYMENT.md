@@ -21,7 +21,7 @@ Currently it's only showing the README. Let's fix it!
 
    **Secret 3:**
    - Name: `NEXT_PUBLIC_GEMINI_API_KEY`
-   - Value: `AIzaSyDAPwdjFvLknDrbmEj1kHIZRd_H4nITvMc`
+   - Value: Your Gemini API key (get one from https://makersuite.google.com/app/apikey)
    - Click **"Add secret"**
 
    **Secret 4:**

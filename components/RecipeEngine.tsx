@@ -18,6 +18,13 @@ export default function RecipeEngine() {
   const [mode, setMode] = useState<'use-it-up' | 'best-fit'>('use-it-up');
   const [loading, setLoading] = useState(false);
   const [selectedAppliances, setSelectedAppliances] = useState<string[]>([]);
+  
+  // Filter options
+  const [cookingTime, setCookingTime] = useState<string>('');
+  const [flavorPreference, setFlavorPreference] = useState<string>('');
+  const [preferredCuisine, setPreferredCuisine] = useState<string>('');
+  const [preferredDifficulty, setPreferredDifficulty] = useState<string>('');
+  const [dietaryPreference, setDietaryPreference] = useState<string[]>([]);
 
   const appliances = [
     'Air Fryer',
@@ -27,6 +34,15 @@ export default function RecipeEngine() {
     'Stovetop',
     'Blender',
     'Food Processor',
+    'Instant Pot',
+    'Grill',
+    'Toaster Oven',
+    'Rice Cooker',
+    'Stand Mixer',
+    'Immersion Blender',
+    'Pressure Cooker',
+    'Waffle Maker',
+    'Griddle',
   ];
 
   useEffect(() => {
@@ -72,7 +88,14 @@ export default function RecipeEngine() {
       const generatedRecipe = await generateRecipe(
         availableIngredients,
         mode,
-        selectedAppliances
+        selectedAppliances,
+        {
+          cookingTime,
+          flavorPreference,
+          preferredCuisine,
+          preferredDifficulty,
+          dietaryPreference,
+        }
       );
 
       if (generatedRecipe) {
@@ -205,6 +228,139 @@ export default function RecipeEngine() {
         </div>
       </Card>
 
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <CardTitle>Recipe Preferences</CardTitle>
+            <Button
+              onClick={() => {
+                setCookingTime('');
+                setFlavorPreference('');
+                setPreferredCuisine('');
+                setPreferredDifficulty('');
+                setDietaryPreference([]);
+              }}
+              variant="outline"
+              size="sm"
+            >
+              Clear All
+            </Button>
+          </div>
+        </CardHeader>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-900 mb-2">
+              Cooking Time
+            </label>
+            <div className="flex gap-2 flex-wrap">
+              {['Quick (under 30 min)', 'Medium (30-60 min)', 'Long (60+ min)', 'Any'].map((time) => (
+                <button
+                  key={time}
+                  onClick={() => setCookingTime(time === 'Any' ? '' : time)}
+                  className={`px-4 py-2 rounded border-2 transition-colors ${
+                    cookingTime === time || (time === 'Any' && cookingTime === '')
+                      ? 'border-green-600 bg-green-50 text-green-700'
+                      : 'border-gray-300 text-gray-700 hover:border-gray-400'
+                  }`}
+                >
+                  {time}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-900 mb-2">
+              Flavor Preference
+            </label>
+            <div className="flex gap-2 flex-wrap">
+              {['Sweet', 'Savory', 'Spicy', 'Mild', 'Any'].map((flavor) => (
+                <button
+                  key={flavor}
+                  onClick={() => setFlavorPreference(flavor === 'Any' ? '' : flavor)}
+                  className={`px-4 py-2 rounded border-2 transition-colors ${
+                    flavorPreference === flavor || (flavor === 'Any' && flavorPreference === '')
+                      ? 'border-purple-600 bg-purple-50 text-purple-700'
+                      : 'border-gray-300 text-gray-700 hover:border-gray-400'
+                  }`}
+                >
+                  {flavor}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-900 mb-2">
+              Cuisine Type
+            </label>
+            <div className="flex gap-2 flex-wrap">
+              {['Italian', 'Asian', 'American', 'Mexican', 'Mediterranean', 'Indian', 'French', 'Any'].map((cuisine) => (
+                <button
+                  key={cuisine}
+                  onClick={() => setPreferredCuisine(cuisine === 'Any' ? '' : cuisine)}
+                  className={`px-4 py-2 rounded border-2 transition-colors ${
+                    preferredCuisine === cuisine || (cuisine === 'Any' && preferredCuisine === '')
+                      ? 'border-pink-600 bg-pink-50 text-pink-700'
+                      : 'border-gray-300 text-gray-700 hover:border-gray-400'
+                  }`}
+                >
+                  {cuisine}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-900 mb-2">
+              Difficulty Level
+            </label>
+            <div className="flex gap-2 flex-wrap">
+              {['Easy', 'Medium', 'Hard', 'Any'].map((difficulty) => (
+                <button
+                  key={difficulty}
+                  onClick={() => setPreferredDifficulty(difficulty === 'Any' ? '' : difficulty)}
+                  className={`px-4 py-2 rounded border-2 transition-colors ${
+                    preferredDifficulty === difficulty || (difficulty === 'Any' && preferredDifficulty === '')
+                      ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
+                      : 'border-gray-300 text-gray-700 hover:border-gray-400'
+                  }`}
+                >
+                  {difficulty}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-900 mb-2">
+              Dietary Preferences
+            </label>
+            <div className="flex gap-2 flex-wrap">
+              {['Vegetarian', 'Vegan', 'Gluten-Free', 'Keto', 'Low-Carb', 'Dairy-Free', 'Nut-Free'].map((diet) => (
+                <button
+                  key={diet}
+                  onClick={() => {
+                    setDietaryPreference((prev) =>
+                      prev.includes(diet)
+                        ? prev.filter((d) => d !== diet)
+                        : [...prev, diet]
+                    );
+                  }}
+                  className={`px-4 py-2 rounded border-2 transition-colors ${
+                    dietaryPreference.includes(diet)
+                      ? 'border-teal-600 bg-teal-50 text-teal-700'
+                      : 'border-gray-300 text-gray-700 hover:border-gray-400'
+                  }`}
+                >
+                  {diet}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Card>
+
       <Button
         onClick={handleGenerateRecipe}
         disabled={loading || inventory.length === 0}
@@ -226,34 +382,34 @@ export default function RecipeEngine() {
             </Button>
           </div>
 
-          <div className="mb-4 p-4 bg-gray-50 rounded-lg">
-            <h4 className="font-semibold mb-2">Nutrition per Serving:</h4>
-            <div className="grid grid-cols-4 gap-2 text-sm">
+          <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <h4 className="font-semibold mb-3 text-gray-900">Nutrition per Serving:</h4>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div>
-                <span className="text-gray-600">Calories:</span>
-                <p className="font-semibold">{recipe.calories_per_serving}</p>
+                <span className="text-gray-900 font-medium block mb-1">Calories:</span>
+                <p className="font-bold text-lg text-blue-700">{recipe.calories_per_serving}</p>
               </div>
               <div>
-                <span className="text-gray-600">Protein:</span>
-                <p className="font-semibold">{recipe.protein_per_serving}g</p>
+                <span className="text-gray-900 font-medium block mb-1">Protein:</span>
+                <p className="font-bold text-lg text-blue-700">{recipe.protein_per_serving}g</p>
               </div>
               <div>
-                <span className="text-gray-600">Carbs:</span>
-                <p className="font-semibold">{recipe.carbs_per_serving}g</p>
+                <span className="text-gray-900 font-medium block mb-1">Carbs:</span>
+                <p className="font-bold text-lg text-blue-700">{recipe.carbs_per_serving}g</p>
               </div>
               <div>
-                <span className="text-gray-600">Fats:</span>
-                <p className="font-semibold">{recipe.fats_per_serving}g</p>
+                <span className="text-gray-900 font-medium block mb-1">Fats:</span>
+                <p className="font-bold text-lg text-blue-700">{recipe.fats_per_serving}g</p>
               </div>
             </div>
-            <p className="text-sm text-gray-600 mt-2">Serves: {recipe.servings}</p>
+            <p className="text-sm text-gray-900 font-medium mt-3">Serves: <span className="font-bold">{recipe.servings}</span></p>
           </div>
 
           <div className="mb-4">
-            <h4 className="font-semibold mb-2">Ingredients:</h4>
+            <h4 className="font-semibold mb-2 text-gray-900">Ingredients:</h4>
             <ul className="list-disc list-inside space-y-1">
               {recipe.ingredients.map((ing, idx) => (
-                <li key={idx} className="text-gray-700">
+                <li key={idx} className="text-gray-900 font-medium">
                   {ing.quantity} {ing.unit} {ing.name}
                 </li>
               ))}
@@ -273,20 +429,76 @@ export default function RecipeEngine() {
               </div>
               <ul className="list-disc list-inside">
                 {recipe.missing_ingredients.map((ing, idx) => (
-                  <li key={idx} className="text-gray-700">{ing}</li>
+                  <li key={idx} className="text-gray-900 font-medium">{ing}</li>
                 ))}
               </ul>
             </div>
           )}
 
+          <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            {recipe.cooking_time && (
+              <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                <h4 className="font-semibold mb-1 text-gray-900">Cooking Time:</h4>
+                <p className="text-lg font-bold text-green-700">{recipe.cooking_time} minutes</p>
+              </div>
+            )}
+            {recipe.prep_time && (
+              <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                <h4 className="font-semibold mb-1 text-gray-900">Prep Time:</h4>
+                <p className="text-lg font-bold text-purple-700">{recipe.prep_time} minutes</p>
+              </div>
+            )}
+            {recipe.total_time && (
+              <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                <h4 className="font-semibold mb-1 text-gray-900">Total Time:</h4>
+                <p className="text-lg font-bold text-orange-700">{recipe.total_time} minutes</p>
+              </div>
+            )}
+            {recipe.difficulty && (
+              <div className="p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
+                <h4 className="font-semibold mb-1 text-gray-900">Difficulty:</h4>
+                <p className={`text-lg font-bold ${
+                  recipe.difficulty === 'Easy' ? 'text-green-700' :
+                  recipe.difficulty === 'Medium' ? 'text-yellow-700' :
+                  'text-red-700'
+                }`}>{recipe.difficulty}</p>
+              </div>
+            )}
+          </div>
+
+          {recipe.cuisine_type && (
+            <div className="mb-4">
+              <h4 className="font-semibold mb-2 text-gray-900">Cuisine Type:</h4>
+              <span className="px-4 py-2 bg-pink-100 text-pink-800 rounded-full text-sm font-medium">
+                {recipe.cuisine_type}
+              </span>
+            </div>
+          )}
+
+          {recipe.dietary_tags && recipe.dietary_tags.length > 0 && (
+            <div className="mb-4">
+              <h4 className="font-semibold mb-2 text-gray-900">Dietary Tags:</h4>
+              <div className="flex gap-2 flex-wrap">
+                {recipe.dietary_tags.map((tag, idx) => (
+                  <span
+                    key={idx}
+                    className="px-3 py-1 bg-teal-100 text-teal-800 rounded-full text-sm font-medium"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
           {recipe.appliances_required && recipe.appliances_required.length > 0 && (
             <div className="mb-4">
-              <h4 className="font-semibold mb-2">Required Appliances:</h4>
+              <h4 className="font-semibold mb-2 text-gray-900">Required Appliances:</h4>
               <div className="flex gap-2 flex-wrap">
                 {recipe.appliances_required.map((app, idx) => (
                   <span
                     key={idx}
-                    className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm"
+                    className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium"
                   >
                     {app}
                   </span>
@@ -295,11 +507,24 @@ export default function RecipeEngine() {
             </div>
           )}
 
+          {recipe.tips && recipe.tips.length > 0 && (
+            <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+              <h4 className="font-semibold mb-2 text-gray-900 flex items-center gap-2">
+                💡 Cooking Tips:
+              </h4>
+              <ul className="list-disc list-inside space-y-1">
+                {recipe.tips.map((tip, idx) => (
+                  <li key={idx} className="text-gray-900">{tip}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           <div>
-            <h4 className="font-semibold mb-2">Instructions:</h4>
+            <h4 className="font-semibold mb-2 text-gray-900">Instructions:</h4>
             <ol className="list-decimal list-inside space-y-2">
               {recipe.instructions.map((step, idx) => (
-                <li key={idx} className="text-gray-700">{step}</li>
+                <li key={idx} className="text-gray-900 font-medium">{step}</li>
               ))}
             </ol>
           </div>

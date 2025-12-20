@@ -32,7 +32,7 @@ Click **"New repository secret"** for each one:
 
 #### Secret 3: `NEXT_PUBLIC_GEMINI_API_KEY`
 - **Name:** `NEXT_PUBLIC_GEMINI_API_KEY`
-- **Value:** `AIzaSyDAPwdjFvLknDrbmEj1kHIZRd_H4nITvMc`
+- **Value:** Your Gemini API key (see instructions below to get a new one)
 
 #### Secret 4: `NEXT_PUBLIC_APP_URL`
 - **Name:** `NEXT_PUBLIC_APP_URL`
@@ -80,6 +80,17 @@ After deployment completes:
 2. Select your project
 3. Go to **Settings** → **API**
 4. Copy the **Project URL** (should look like `https://xxxxx.supabase.co`)
+
+### "Your API key was reported as leaked" (Gemini API Error)
+- ⚠️ **This means the API key in the documentation was exposed publicly and Google revoked it**
+- You need to get a **new API key** from Google:
+  1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
+  2. Sign in with your Google account
+  3. Click **"Create API Key"** or **"Get API Key"**
+  4. Copy the new API key
+  5. Update the `NEXT_PUBLIC_GEMINI_API_KEY` secret in GitHub with the new key
+  6. Redeploy your site
+- **Important:** Never commit API keys to GitHub! Always use GitHub Secrets.
 
 ## ✅ Success Checklist
 
