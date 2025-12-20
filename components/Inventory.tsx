@@ -27,18 +27,25 @@ export default function Inventory() {
 
   function initializeSpeechRecognition() {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = false;
-      recognitionRef.current.interimResults = false;
-      recognitionRef.current.onresult = async (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        await handleVoiceInput(transcript);
-        setIsListening(false);
-      };
-      recognitionRef.current.onerror = () => {
-        setIsListening(false);
-      };
+      try {
+        const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+        const recognition = new SpeechRecognition();
+        if (recognition) {
+          recognition.continuous = false;
+          recognition.interimResults = false;
+          recognition.onresult = async (event: any) => {
+            const transcript = event.results[0][0].transcript;
+            await handleVoiceInput(transcript);
+            setIsListening(false);
+          };
+          recognition.onerror = () => {
+            setIsListening(false);
+          };
+          recognitionRef.current = recognition;
+        }
+      } catch (error) {
+        console.error('Error initializing speech recognition:', error);
+      }
     }
   }
 
@@ -94,7 +101,13 @@ export default function Inventory() {
   async function startListening() {
     if (recognitionRef.current) {
       setIsListening(true);
-      recognitionRef.current.start();
+      try {
+        recognitionRef.current.start();
+      } catch (error) {
+        console.error('Error starting speech recognition:', error);
+        setIsListening(false);
+        alert('Error starting voice input. Please try again.');
+      }
     } else {
       alert('Speech recognition is not supported in your browser');
     }
