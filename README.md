@@ -136,23 +136,40 @@ See `lib/supabase/schema.sql` for the complete schema with Row Level Security po
 
 ## 🚢 Deployment
 
-### Vercel (Recommended)
+### ⚠️ Important: GitHub Pages Doesn't Support Next.js
+
+**GitHub Pages is for static sites only** - it doesn't support Next.js features. You need to deploy to a platform that supports Next.js.
+
+### Vercel (Recommended - Made by Next.js Creators)
+
+1. Push your code to GitHub (already done ✅)
+2. Go to [vercel.com](https://vercel.com) and sign up with GitHub
+3. Click "Add New Project" → Import your repository
+4. **Add environment variables** in Settings → Environment Variables:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `NEXT_PUBLIC_GEMINI_API_KEY`
+   - `NEXT_PUBLIC_APP_URL` (set to your Vercel URL after deployment)
+5. Click "Deploy" - your site will be live in 2-3 minutes!
+
+**See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for detailed instructions.**
+
+### Netlify (Alternative)
 
 1. Push your code to GitHub
-2. Import your repository in [Vercel](https://vercel.com)
-3. Add your environment variables in Vercel dashboard
-4. Deploy!
-
-### Netlify
-
-1. Push your code to GitHub
-2. Create a new site in [Netlify](https://netlify.com) and connect your repository
-3. Add your environment variables
-4. Set build command: `npm run build`
-5. Set publish directory: `.next`
+2. Go to [netlify.com](https://netlify.com) and sign up with GitHub
+3. Add new site → Import from GitHub
+4. **Build settings:**
+   - Build command: `npm run build`
+   - Publish directory: `.next`
+5. **Add environment variables** in Site settings → Environment variables
 6. Deploy!
 
-**Important**: Make sure to add all environment variables in your hosting platform's dashboard.
+**Important**: 
+- Add all environment variables in your deployment platform (Vercel/Netlify)
+- **NOT** in GitHub (GitHub doesn't support Next.js environment variables)
+- See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for step-by-step instructions
 
 ## 📝 Environment Variables
 
