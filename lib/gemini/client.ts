@@ -24,6 +24,11 @@ export interface ReceiptItem {
   estimated_expiry_days?: number;
 }
 
+export interface ReceiptParseResult {
+  items: ReceiptItem[];
+  receipt_total?: number;
+}
+
 export interface NutritionData {
   calories: number;
   protein: number;
@@ -55,21 +60,29 @@ export interface Recipe {
   tips?: string[]; // cooking tips and tricks
 }
 
-export async function parseReceipt(imageBase64: string): Promise<ReceiptItem[]> {
+export async function parseReceipt(imageBase64: string): Promise<ReceiptParseResult> {
   const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
   
-  const prompt = `You are a professional receipt parser. Analyze this receipt image and extract all food items with their quantities, units, and prices. 
+  const prompt = `You are a professional receipt parser. Analyze this receipt image and extract all food items with their quantities, units, and prices. Also extract the total amount shown on the receipt.
   
-  Return the data as a JSON array in this exact format:
-  [
-    {
-      "name": "item name",
-      "quantity": number,
-      "unit": "unit type (e.g., 'pieces', 'lbs', 'oz', 'kg', 'g')",
-      "price": number (if available),
-      "estimated_expiry_days": number (estimate based on item type: fresh produce 3-7 days, dairy 5-10 days, meat 2-5 days, pantry items 30-365 days)
-    }
-  ]
+  Return the data as JSON in this exact format:
+  {
+    "items": [
+      {
+        "name": "item name",
+        "quantity": number,
+        "unit": "unit type (e.g., 'pieces', 'lbs', 'oz', 'kg', 'g')",
+        "price": number (individual item price if available),
+        "estimated_expiry_days": number (estimate based on item type: fresh produce 3-7 days, dairy 5-10 days, meat 2-5 days, pantry items 30-365 days)
+      }
+    ],
+    "receipt_total": number (the total amount shown on the receipt, e.g., "TOTAL: $45.67" would be 45.67)
+  }
+  
+  IMPORTANT: 
+  - Extract the exact total from the receipt (look for "TOTAL", "TOTAL AMOUNT", "AMOUNT DUE", etc.)
+  - Make sure individual item prices are accurate
+  - If the sum of individual prices doesn't match the receipt_total, re-check each item's price more carefully
   
   Only return valid JSON, no additional text.`;
 
@@ -87,19 +100,71 @@ export async function parseReceipt(imageBase64: string): Promise<ReceiptItem[]> 
     const text = response.text();
     
     // Extract JSON from response
-    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
+      const parsed = JSON.parse(jsonMatch[0]);
+      let receiptResult: ReceiptParseResult = {
+        items: parsed.items || [],
+        receipt_total: parsed.receipt_total,
+      };
+
+      // Validate price totals
+      if (receiptResult.receipt_total && receiptResult.items.length > 0) {
+        const sumOfPrices = receiptResult.items
+          .filter(item => item.price !== undefined && item.price !== null)
+          .reduce((sum, item) => sum + (item.price || 0), 0);
+        
+        // If prices don't match (within 0.10 tolerance for rounding), re-parse with emphasis on prices
+        const difference = Math.abs(sumOfPrices - receiptResult.receipt_total);
+        if (difference > 0.10) {
+          console.warn(`Price mismatch detected. Sum: $${sumOfPrices.toFixed(2)}, Total: $${receiptResult.receipt_total.toFixed(2)}, Difference: $${difference.toFixed(2)}`);
+          
+          // Re-parse with emphasis on price accuracy
+          const recheckPrompt = `You previously parsed this receipt but the sum of individual item prices ($${sumOfPrices.toFixed(2)}) doesn't match the receipt total ($${receiptResult.receipt_total.toFixed(2)}). 
+
+Please re-analyze the receipt image and carefully extract the EXACT price for each item. Pay special attention to:
+- Individual item prices
+- Any discounts or adjustments
+- Tax (if included in item prices)
+- Make sure the sum of all item prices equals the receipt total ($${receiptResult.receipt_total.toFixed(2)})
+
+Return the corrected data in the same JSON format as before.`;
+          
+          const recheckResult = await model.generateContent([recheckPrompt, imagePart]);
+          const recheckResponse = await recheckResult.response;
+          const recheckText = recheckResponse.text();
+          const recheckJsonMatch = recheckText.match(/\{[\s\S]*\}/);
+          
+          if (recheckJsonMatch) {
+            const recheckParsed = JSON.parse(recheckJsonMatch[0]);
+            receiptResult = {
+              items: recheckParsed.items || receiptResult.items,
+              receipt_total: recheckParsed.receipt_total || receiptResult.receipt_total,
+            };
+            
+            // Verify the correction
+            const correctedSum = receiptResult.items
+              .filter(item => item.price !== undefined && item.price !== null)
+              .reduce((sum, item) => sum + (item.price || 0), 0);
+            
+            if (Math.abs(correctedSum - receiptResult.receipt_total!) > 0.10) {
+              console.warn(`Price mismatch still exists after re-check. Sum: $${correctedSum.toFixed(2)}, Total: $${receiptResult.receipt_total!.toFixed(2)}`);
+            }
+          }
+        }
+      }
+
+      return receiptResult;
     }
     
-    return [];
+    return { items: [], receipt_total: undefined };
   } catch (error: any) {
     console.error('Error parsing receipt:', error);
     if (error?.message?.includes('API key was reported as leaked')) {
       console.error('❌ Your Gemini API key has been revoked. Please get a new key from https://makersuite.google.com/app/apikey');
       console.error('💡 Update the NEXT_PUBLIC_GEMINI_API_KEY secret in GitHub and redeploy.');
     }
-    return [];
+    return { items: [], receipt_total: undefined };
   }
 }
 

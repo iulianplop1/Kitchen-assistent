@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { supabase } from '@/lib/supabase/client';
-import { parseReceipt, processVoiceCommand, parseNutritionLabel } from '@/lib/gemini/client';
+import { parseReceipt, processVoiceCommand, parseNutritionLabel, ReceiptItem } from '@/lib/gemini/client';
+import ReceiptReviewModal from '@/components/ReceiptReviewModal';
 import { Card, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { formatDate, getDaysUntilExpiry, getExpiryColor } from '@/lib/utils';
@@ -17,6 +18,10 @@ export default function Inventory() {
   const [loading, setLoading] = useState(true);
   const [isListening, setIsListening] = useState(false);
   const [isProcessingReceipt, setIsProcessingReceipt] = useState(false);
+  const [receiptReviewData, setReceiptReviewData] = useState<{
+    items: ReceiptItem[];
+    receiptTotal?: number;
+  } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
 
@@ -78,9 +83,16 @@ export default function Inventory() {
       const reader = new FileReader();
       reader.onloadend = async () => {
         const base64 = (reader.result as string).split(',')[1];
-        const items = await parseReceipt(base64);
-        await addItemsToInventory(items);
+        const result = await parseReceipt(base64);
+        setReceiptReviewData({
+          items: result.items,
+          receiptTotal: result.receipt_total,
+        });
         setIsProcessingReceipt(false);
+        // Reset file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
       };
       reader.readAsDataURL(file);
     } catch (error) {
@@ -113,7 +125,7 @@ export default function Inventory() {
     }
   }
 
-  async function addItemsToInventory(items: any[]) {
+  async function addItemsToInventory(items: ReceiptItem[]) {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
@@ -137,9 +149,19 @@ export default function Inventory() {
 
       if (error) throw error;
       await loadInventory();
+      setReceiptReviewData(null);
     } catch (error) {
       console.error('Error adding items:', error);
+      alert('Error adding items to inventory. Please try again.');
     }
+  }
+
+  function handleReceiptReviewConfirm(items: ReceiptItem[]) {
+    addItemsToInventory(items);
+  }
+
+  function handleReceiptReviewClose() {
+    setReceiptReviewData(null);
   }
 
   async function handleNutritionLabelUpload(itemId: string, file: File) {
@@ -322,6 +344,16 @@ export default function Inventory() {
             {searchTerm ? 'No items found' : 'Your inventory is empty. Add items to get started!'}
           </p>
         </Card>
+      )}
+
+      {receiptReviewData && (
+        <ReceiptReviewModal
+          items={receiptReviewData.items}
+          receiptTotal={receiptReviewData.receiptTotal}
+          isOpen={!!receiptReviewData}
+          onClose={handleReceiptReviewClose}
+          onConfirm={handleReceiptReviewConfirm}
+        />
       )}
     </div>
   );
