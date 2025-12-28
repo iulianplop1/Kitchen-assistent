@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Refrigerator, ChefHat, Heart, LogOut, ShoppingCart } from 'lucide-react';
+import { Home, Refrigerator, ChefHat, Heart, LogOut, ShoppingCart, DollarSign } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 
@@ -21,6 +21,7 @@ export default function Navigation() {
     { href: '/recipes', label: 'Recipes', icon: ChefHat },
     { href: '/shopping', label: 'Shopping', icon: ShoppingCart },
     { href: '/health', label: 'Health', icon: Heart },
+    { href: '/budget', label: 'Budget Tracker', icon: DollarSign },
   ];
 
   return (
@@ -47,6 +48,7 @@ export default function Navigation() {
                   >
                     <Icon className="w-4 h-4 mr-2" />
                     {item.label}
+                    {item.href === '/budget' && ' $'}
                   </Link>
                 );
               })}

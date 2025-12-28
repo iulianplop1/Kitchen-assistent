@@ -165,7 +165,7 @@ NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_api_key
 
 **This file:**
 - ✅ Shows others what variables they need
-- ✅ Has NO real keys
+- ✅ Has NO real keys ff
 - ✅ Is safe to commit
 
 ### For Deployment (Vercel/Netlify)
